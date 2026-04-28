@@ -2,14 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// GO TO: Firebase Console > Project Settings to get these real values
 const firebaseConfig = {
-  apiKey: "AIzaSy...", // REPLACED: Put your real Web API Key here
+  apiKey: "AIzaSyBrAYGeYG0kTEjmqGeaJ6FsR_clJSaQtn8", 
   authDomain: "uc-smarthelp.firebaseapp.com",
   projectId: "uc-smarthelp",
   storageBucket: "uc-smarthelp.appspot.com",
-  messagingSenderId: "123456789", 
-  appId: "1:123456789:web:abcdef" // REPLACED: Put your real App ID here
+  messagingSenderId: "367123456789", // <-- Replace with your Sender ID from Firebase
+  appId: "1:367123456789:web:abcdef12345" // <-- Replace with your App ID from Firebase
 };
 
 const app = initializeApp(firebaseConfig);
