@@ -2,16 +2,16 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// GO TO: Firebase Console > Project Settings to get these real values
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSy...", // REPLACED: Put your real Web API Key here
   authDomain: "uc-smarthelp.firebaseapp.com",
   projectId: "uc-smarthelp",
   storageBucket: "uc-smarthelp.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
+  messagingSenderId: "123456789", 
+  appId: "1:123456789:web:abcdef" // REPLACED: Put your real App ID here
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
