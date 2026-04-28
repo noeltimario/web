@@ -11,6 +11,7 @@ app.use(cors({
   origin: [
     "https://uc-smart-help-hosting.vercel.app", 
     "https://uc-smart-help-hosting-3qfoa2c9k-noeltimarios-projects.vercel.app",
+    "https://uc-smart-help-hosting-n62l6xaly-noeltimarios-projects.vercel.app", // Gikan sa image_59e49a.png
     "http://localhost:5173"
   ],
   credentials: true
