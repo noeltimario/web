@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { auth } from "@/integrations/supabase/client"; // This now exports Firebase auth
+import { auth } from "@/integrations/supabase/client"; 
 import { onAuthStateChanged, User, signOut as firebaseSignOut } from "firebase/auth";
 
 type AppRole = "student" | "staff" | "admin";
@@ -8,8 +8,7 @@ interface Profile {
   id: string;
   first_name: string;
   last_name: string;
-  email: string;
-  avatar_url: string | null;
+  username: string;
 }
 
 interface AuthContextType {
@@ -36,25 +35,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Use your Render backend URL from .env
   const API_URL = import.meta.env.VITE_API_URL || "https://uc-smarthelp-main.onrender.com";
 
   const fetchUserData = async (firebaseUser: User) => {
     try {
-      // Fetch profile and roles from your MySQL backend
-      const response = await fetch(`${API_URL}/api/user-profile?email=${firebaseUser.email}`);
+      // FIX: Changed to /api/google-auth to match your server.js logic
+      const response = await fetch(`${API_URL}/api/google-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: firebaseUser.email,
+          firstName: firebaseUser.displayName?.split(' ')[0] || 'User',
+          lastName: firebaseUser.displayName?.split(' ')[1] || 'Student',
+          profileImage: firebaseUser.photoURL
+        })
+      });
+
       if (response.ok) {
         const data = await response.json();
-        setProfile(data.profile);
-        setRoles(data.roles || ["student"]);
+        setProfile({
+          id: data.id,
+          first_name: data.firstName,
+          last_name: data.lastName,
+          username: data.username,
+          email: data.username
+        } as any);
+        setRoles([data.role as AppRole]);
       }
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      console.error("Auth Handshake Failed:", error);
     }
   };
 
   useEffect(() => {
-    // Firebase Auth Listener
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
@@ -65,7 +78,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
