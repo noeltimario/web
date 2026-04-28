@@ -1,8 +1,7 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// These values must match your Firebase Console Project Settings
 const firebaseConfig = {
   apiKey: "AIzaSyBrAYGeYG0kTEjmqGeaJ6FsR_clJSaQtn8", 
   authDomain: "uc-smarthelp.firebaseapp.com",
@@ -12,7 +11,9 @@ const firebaseConfig = {
   appId: "1:367123456789:web:abcdef12345" 
 };
 
-const app = initializeApp(firebaseConfig);
+// FIX: This check prevents the "Duplicate App" white screen crash
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
