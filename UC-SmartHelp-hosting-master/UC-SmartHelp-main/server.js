@@ -19,13 +19,13 @@ app.use(cors({
 
 // SA SERVER.JS (Linya 24-31)
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT) || 27244,
-  // I-REMOVE NI O I-COMMENT OUT:
-  // ssl: { rejectUnauthorized: false } 
+  uri: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
 // FIX: This route handles the handshake from auth.tsx
