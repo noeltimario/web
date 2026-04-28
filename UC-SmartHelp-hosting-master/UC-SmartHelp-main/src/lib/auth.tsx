@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserData = async (firebaseUser: User) => {
     try {
-      // FIX: Changed to /api/google-auth to match your server.js logic
+      // FIX: Changed from /api/user-profile to /api/google-auth
       const response = await fetch(`${API_URL}/api/google-auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,9 +57,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: data.id,
           first_name: data.firstName,
           last_name: data.lastName,
-          username: data.username,
-          email: data.username
-        } as any);
+          username: data.username
+        });
         setRoles([data.role as AppRole]);
       }
     } catch (error) {
