@@ -5,8 +5,9 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const app = express();
-app.use(express.json({ limit: '10mb' }));
 
+// Middlewares
+app.use(express.json({ limit: '10mb' }));
 app.use(cors({
   origin: [
     "https://uc-smart-help-hosting.vercel.app", 
@@ -17,7 +18,7 @@ app.use(cors({
   credentials: true
 }));
 
-// SA SERVER.JS (Linya 24-31)
+// DATABASE CONNECTION POOL
 const db = mysql.createPool({
   uri: process.env.DATABASE_URL,
   ssl: {
@@ -28,19 +29,33 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
-// FIX: This route handles the handshake from auth.tsx
+// Test Database Connection
+db.getConnection()
+  .then(connection => {
+    console.log('✅ Connected to Aiven MySQL Database!');
+    connection.release();
+  })
+  .catch(err => {
+    console.error('❌ Database connection failed:', err.message);
+  });
+
+// ROUTES
 app.post('/api/google-auth', async (req, res) => {
   const { email, firstName, lastName, profileImage } = req.body;
   try {
+    // Check if user exists
     const [rows] = await db.query('SELECT * FROM users WHERE username = ? OR gmail_account = ?', [email, email]);
     let user = rows[0];
 
     if (!user) {
+      // Register new user if not found
       const [result] = await db.query(
         'INSERT INTO users (first_name, last_name, username, role, image, gmail_account) VALUES (?, ?, ?, ?, ?, ?)',
         [firstName, lastName, email, 'student', profileImage || null, email]
       );
-      user = { id: result.insertId, first_name: firstName, last_name: lastName, username: email, role: 'student' };
+      
+      const [newUser] = await db.query('SELECT * FROM users WHERE id = ? OR user_id = ?', [result.insertId, result.insertId]);
+      user = newUser[0];
     }
 
     res.json({ 
@@ -51,6 +66,7 @@ app.post('/api/google-auth', async (req, res) => {
       username: user.username 
     });
   } catch (error) {
+    console.error("Auth Error:", error);
     res.status(500).json({ error: "Google Auth error", details: error.message });
   }
 });
