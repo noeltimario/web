@@ -8,7 +8,11 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 
 app.use(cors({
-  origin: ["https://uc-smart-help-hosting.vercel.app", "http://localhost:5173"],
+  origin: [
+    "https://uc-smart-help-hosting.vercel.app", 
+    "https://uc-smart-help-hosting-3qfoa2c9k-noeltimarios-projects.vercel.app",
+    "http://localhost:5173"
+  ],
   credentials: true
 }));
 
