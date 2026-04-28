@@ -2,15 +2,19 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBrAYGeYG0kTEjmqGeaJ6FsR_clJSaQtn8",
+  apiKey: "AIzaSyAwr0NAzEKOfd1M9pnRYSw7uYpmpHDLsdk",
   authDomain: "uc-smarthelp-1d3ba.firebaseapp.com",
   projectId: "uc-smarthelp-1d3ba",
   storageBucket: "uc-smarthelp-1d3ba.firebasestorage.app",
-  messagingSenderId: "360098008892",
-  appId: "1:360098008892:web:7f6f8745585098e9882297"
+  messagingSenderId: "870671178304",
+  appId: "1:870671178304:web:18099f23abded48a431da5"
 };
 
-// FIX: Prevents "Firebase App named [DEFAULT] already exists" crash
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Prevent duplicate Firebase app initialization
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+export default app;
