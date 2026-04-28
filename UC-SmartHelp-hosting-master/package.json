@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix ./UC-SmartHelp-main run dev",
+    "server": "npm --prefix ./UC-SmartHelp-main run server",
+    "install:inner": "npm --prefix ./UC-SmartHelp-main install",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "vit": "^0.1.0",
+    "vite": "^7.3.2"
+  }
+}
