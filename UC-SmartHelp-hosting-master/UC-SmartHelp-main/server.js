@@ -8,7 +8,7 @@ dotenv.config();
 const app = express();
 app.use(express.json({ limit: '10mb' }));
 
-// FIX: Trusts both your main Vercel URL and the project-specific one
+// FIX: Trusts all your Vercel deployment URLs to prevent CORS blocks
 app.use(cors({
   origin: [
     "https://uc-smart-help-hosting.vercel.app", 
@@ -24,7 +24,7 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: Number(process.env.DB_PORT) || 27244,
-  ssl: { rejectUnauthorized: false } // Required for Aiven
+  ssl: { rejectUnauthorized: false } // REQUIRED for Aiven
 });
 
 // --- AUTHENTICATION ---
@@ -49,12 +49,12 @@ app.post('/api/google-auth', async (req, res) => {
 });
 
 app.post('/api/register', async (req, res) => {
-  const { firstName, lastName, username, password } = req.body;
+  const { firstName, lastName, username, password, email } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await db.query(
-      'INSERT INTO users (first_name, last_name, username, password, role) VALUES (?, ?, ?, ?, ?)',
-      [firstName, lastName, username, hashedPassword, 'student']
+      'INSERT INTO users (first_name, last_name, username, password, role, gmail_account) VALUES (?, ?, ?, ?, ?, ?)',
+      [firstName, lastName, username, hashedPassword, 'student', email]
     );
     res.status(201).json({ message: "User registered", id: result.insertId });
   } catch (error) {
@@ -62,18 +62,18 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// --- TICKETS & FEEDBACK ---
-
-app.post('/api/tickets', async (req, res) => {
-  const { subject, description, department, sender_id } = req.body;
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
   try {
-    const [result] = await db.query(
-      'INSERT INTO tickets (subject, description, department, user_id, status) VALUES (?, ?, ?, ?, ?)',
-      [subject, description, department, sender_id, 'pending']
-    );
-    res.status(201).json({ ticketId: result.insertId });
+    const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+    const user = rows[0];
+    if (user && user.password && await bcrypt.compare(password, user.password)) {
+      res.json({ id: user.id, role: user.role, firstName: user.first_name, lastName: user.last_name });
+    } else {
+      res.status(401).json({ error: "Invalid credentials" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Failed to create ticket" });
+    res.status(500).json({ error: "Login failed" });
   }
 });
 
